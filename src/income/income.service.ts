@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { parseToNumericId } from 'helper';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -56,8 +57,7 @@ export class IncomeService {
   }
 
   async getSingleIncome(id: number) {
-    const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
-
+    const numericId = parseToNumericId(id);
     return this.prisma.income.findFirst({
       where: {
         id: numericId,
@@ -72,7 +72,7 @@ export class IncomeService {
     amount: string,
     record_date: string,
   ) {
-    const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+    const numericId = parseToNumericId(id);
     if (isNaN(numericId)) {
       throw new HttpException('Invalid ID provided', HttpStatus.BAD_REQUEST);
     }
@@ -103,7 +103,7 @@ export class IncomeService {
       throw new HttpException('Income record not found', HttpStatus.NOT_FOUND);
     }
     const transactionDate = record_date + 'T00:00:00.000Z';
-   
+
     return this.prisma.income.update({
       where: {
         id: numericId,
@@ -117,7 +117,7 @@ export class IncomeService {
   }
 
   async deleteIncomeRecord(userId: number, id: number) {
-    const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+    const numericId = parseToNumericId(id);
     if (!numericId) {
       throw new Error('id needed');
     }

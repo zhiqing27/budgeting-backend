@@ -1,6 +1,6 @@
 import { Injectable, ConflictException, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { isValidString } from 'helper';
+import { isValidString, parseToNumericId } from 'helper';
 
 @Injectable()
 export class CategoryService {
@@ -49,8 +49,7 @@ export class CategoryService {
   }
    // Get a single category by its ID and userId (optional)
    async getCategoryById(userId: number, categoryId: number) {
-    const numericCategoryId = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
-
+    const numericCategoryId = parseToNumericId(categoryId)
     return this.prisma.category.findFirst({
         where: {
           id: numericCategoryId,  
@@ -58,7 +57,7 @@ export class CategoryService {
       });
   }
   async updateCategory(userId: number, categoryId: number, newName: string) {
-    const numericCategoryId = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
+    const numericCategoryId = parseToNumericId(categoryId)
     if (!isValidString(newName)|| !categoryId) {
       throw new Error('Category Name or category id is required');
     }
@@ -73,7 +72,7 @@ export class CategoryService {
   }
 
   async deleteCategory(userId: number, categoryId: number) {
-    const numericCategoryId = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
+    const numericCategoryId = parseToNumericId(categoryId)
     if (!categoryId) {
       throw new Error('Category id needed');
     }

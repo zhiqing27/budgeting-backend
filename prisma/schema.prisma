@@ -18,6 +18,7 @@ model User {
   expenses      Expense[]
   incomes       Income[]
   categories    Category[]
+  budgets       Budget[]
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
@@ -67,16 +68,34 @@ model Income {
   @@map("incomes")  // Map model to lowercase plural table name
 }
 
-// Category table for categorizing both income and expenses
+// Category tables
+
 model Category {
   id        Int       @id @default(autoincrement())
   userId    Int       // Foreign key to associate category with a user
-  name      String
-  expenses  Expense[]
+  name      String    // Name of the category (e.g., Food, Travel)
+  expenses  Expense[] // A category can have multiple expenses associated with it
+  budgets   Budget[]  // A category can have multiple budgets associated with it
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, name])  // Ensure unique category names per user
-  @@map("categories")
+  @@map("categories")  // Map model to lowercase plural table name
 }
+
+model Budget {
+  id           Int       @id @default(autoincrement())
+  userId       Int
+  categoryId   Int?      // Make categoryId optional for budgets that are not category-specific
+  amount       Float     // Budget amount for the user or category
+  recordDate   DateTime  // Store the date when the budget is created or updated
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category     Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@map("budgets") // Map model to lowercase plural table name
+}
+
