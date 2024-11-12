@@ -43,6 +43,7 @@ model Expense {
   userId        Int
   categoryId    Int?        // Make categoryId optional
   amount        Float
+  recordDate DateTime 
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   description   String?
@@ -56,6 +57,7 @@ model Expense {
 model Income {
   id            Int         @id @default(autoincrement())
   userId        Int
+  recordDate DateTime
   amount        Float
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt

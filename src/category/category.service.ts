@@ -1,5 +1,6 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { isValidString } from 'helper';
 
 @Injectable()
 export class CategoryService {
@@ -7,7 +8,14 @@ export class CategoryService {
 
   async createCategory(userId: number, name: string) {
     const lowercaseName = name.toLowerCase();
+    if (!isValidString(name)) {
+      throw new HttpException(
+        'Category Name is required',
+        HttpStatus.BAD_REQUEST,
+      );
 
+    }
+    
     // Check if a category with the same name already exists for the user
     const existingCategory = await this.prisma.category.findFirst({
       where: {
@@ -17,8 +25,11 @@ export class CategoryService {
     });
 
     if (existingCategory) {
-      // Throw an error if the category already exists for this user
-      throw new ConflictException('Category with this name already exists for this user');
+      throw new HttpException(
+        'Category with this name already exists for this user',
+        HttpStatus.BAD_REQUEST,
+      );
+
     }
 
     // Create the category if it doesn't exist
@@ -43,26 +54,29 @@ export class CategoryService {
     return this.prisma.category.findFirst({
         where: {
           id: numericCategoryId,  
-          userId: userId,  
         },
       });
   }
   async updateCategory(userId: number, categoryId: number, newName: string) {
     const numericCategoryId = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
-
+    if (!isValidString(newName)|| !categoryId) {
+      throw new Error('Category Name or category id is required');
+    }
     return this.prisma.category.update({
       where: {
         id: numericCategoryId,
-        userId: userId
       },
       data: {
         name: newName,
       },
     });
   }
+
   async deleteCategory(userId: number, categoryId: number) {
     const numericCategoryId = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
-
+    if (!categoryId) {
+      throw new Error('Category id needed');
+    }
     return this.prisma.category.delete({
       where: {
         id: numericCategoryId,
