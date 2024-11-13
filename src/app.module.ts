@@ -15,6 +15,9 @@ import { ReportModule } from './report/report.module';
 import { BudgetAlertModule } from './budget-alert/budget-alert.module';
 import { EmailModule } from './email/email.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { BudgetGoalService } from './budget-goal/budget-goal.service';
+import { BudgetGoalController } from './budget-goal/budget-goal.controller';
+import { BudgetGoalModule } from './budget-goal/budget-goal.module';
 
 @Module({
   imports: [
@@ -29,8 +32,9 @@ import { ScheduleModule } from '@nestjs/schedule';
     ReportModule,
     BudgetAlertModule,
     EmailModule,
+    BudgetGoalModule,
   ],
-  controllers: [AppController, BudgetController],
-  providers: [AppService, BudgetService, ReportService],
+  controllers: [AppController, BudgetController, BudgetGoalController],
+  providers: [AppService, BudgetService, ReportService, BudgetGoalService],
 })
 export class AppModule {}
