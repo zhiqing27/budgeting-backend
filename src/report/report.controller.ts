@@ -51,4 +51,36 @@ export class ReportController {
       new Date(endDate),
     );
   }
+  @Get('budget-vs-actual-spend')
+  async getBudgetVsActualReport(
+    @Request() req,
+    @Query('month') month: string,
+    @Query('year') year: string,
+  ) {
+    const userId = req.user.id;
+    const startDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+    const endDate = new Date(parseInt(year), parseInt(month), 0, 23, 59, 59);
+
+    return this.reportService.getBudgetVsActualReport(
+      userId,
+      new Date(startDate),
+      new Date(endDate),
+    );
+  }
+  @Get('income-expense-trends')
+  async getIncomeExpenseTrends(
+    @Request() req,
+    @Query('year') year: string,
+  ) {
+    const userId = req.user.id;
+    const startDate = new Date(parseToNumericId(year), 0, 1); // January 1st
+    const endDate = new Date(parseToNumericId(year) + 1, 0, 1); // January 1st of the next year
+
+    return this.reportService.getIncomeExpenseTrends(
+      userId,
+      new Date(startDate),
+      new Date(endDate),
+      year
+    );
+  }
 }
