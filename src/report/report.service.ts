@@ -110,6 +110,28 @@ export class ReportService {
         amount: true,
       },
     });
+    const budgetGoals = await this.prisma.budgetGoal.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        type: true,
+        targetAmount: true,
+        progress: true,
+        isComplete: true,
+        logs: {
+          where: {
+            createdAt: {
+              gte: startDate,
+              lte: endDate,
+            },
+          },
+          select: {
+            amount: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
 
     const totalIncome = incomes.reduce((sum, income) => sum + income.amount, 0);
 
@@ -148,6 +170,7 @@ export class ReportService {
       netBalance: formatToTwoDecimalPlaces(netBalance),
       totalSumBudgetOfAllCategories: formatToTwoDecimalPlaces(totalSumBudget),
       categories: categorySummary,
+      budgetGoals: budgetGoals,
     };
   }
 
@@ -188,7 +211,7 @@ export class ReportService {
     const report = budgets.map((budget) => ({
       category: budget.category ? budget.category.name : 'Unknown',
       budgeted: formatToTwoDecimalPlaces(budget.amount),
-      actual: formatToTwoDecimalPlaces(expenseMap[budget.categoryId] || 0), 
+      actual: formatToTwoDecimalPlaces(expenseMap[budget.categoryId] || 0),
       leftOver: budget.amount - (expenseMap[budget.categoryId] || 0),
     }));
 
