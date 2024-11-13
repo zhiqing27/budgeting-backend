@@ -12,10 +12,24 @@ import { BudgetModule } from './budget/budget.module';
 import { BudgetController } from './budget/budget.controller';
 import { ReportService } from './report/report.service';
 import { ReportModule } from './report/report.module';
-
+import { BudgetAlertModule } from './budget-alert/budget-alert.module';
+import { EmailModule } from './email/email.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [  ConfigModule.forRoot({ isGlobal: true }), PrismaModule, AuthModule, ExpenseModule, IncomeModule, CategoryModule, BudgetModule, ReportModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(), 
+    PrismaModule,
+    AuthModule,
+    ExpenseModule,
+    IncomeModule,
+    CategoryModule,
+    BudgetModule,
+    ReportModule,
+    BudgetAlertModule,
+    EmailModule,
+  ],
   controllers: [AppController, BudgetController],
   providers: [AppService, BudgetService, ReportService],
 })

@@ -95,7 +95,7 @@ model Budget {
   budgetAlert      Boolean
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   category     Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-
+  remind_at  DateTime?
   @@map("budgets") // Map model to lowercase plural table name
 }
 

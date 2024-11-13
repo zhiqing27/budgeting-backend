@@ -8,3 +8,6 @@ export function parseToNumericId(id: string | number): number {
   }
   return id;
 }
+export function formatToTwoDecimalPlaces(value: number): number {
+  return Number(value.toFixed(2));
+}

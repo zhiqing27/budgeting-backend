@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { parseToNumericId } from 'helper';
+import { formatToTwoDecimalPlaces, parseToNumericId } from 'helper';
 
 @Injectable()
 export class ReportService {
@@ -143,10 +143,10 @@ export class ReportService {
     const netBalance = totalIncome - totalExpenses;
 
     return {
-      income: totalIncome,
-      totalExpenses,
-      netBalance,
-      totalSumBudgetOfAllCategories: totalSumBudget,
+      income: formatToTwoDecimalPlaces(totalIncome),
+      totalExpenses: formatToTwoDecimalPlaces(totalExpenses),
+      netBalance: formatToTwoDecimalPlaces(netBalance),
+      totalSumBudgetOfAllCategories: formatToTwoDecimalPlaces(totalSumBudget),
       categories: categorySummary,
     };
   }
@@ -187,8 +187,8 @@ export class ReportService {
 
     const report = budgets.map((budget) => ({
       category: budget.category ? budget.category.name : 'Unknown',
-      budgeted: budget.amount,
-      actual: expenseMap[budget.categoryId] || 0,
+      budgeted: formatToTwoDecimalPlaces(budget.amount),
+      actual: formatToTwoDecimalPlaces(expenseMap[budget.categoryId] || 0), 
       leftOver: budget.amount - (expenseMap[budget.categoryId] || 0),
     }));
 
