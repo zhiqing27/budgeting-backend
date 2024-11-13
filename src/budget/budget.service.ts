@@ -3,14 +3,14 @@ import { isValidString, parseToNumericId } from 'helper';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
-export class ExpenseService {
+export class BudgetService {
   constructor(private prisma: PrismaService) {}
-  async createExpense(
+  async createBudget(
     userId: number,
     categoryId: string,
     amount: string,
     record_date: string,
-    description: string,
+    budgetAlert: boolean
   ) {
     if (!amount || isNaN(parseFloat(amount))) {
       throw new Error('Invalid or missing amount value');
@@ -37,18 +37,22 @@ export class ExpenseService {
     const numcategoryId = parseToNumericId(categoryId);
     const floatAmount = parseFloat(amount);
     const transactionDate = record_date + 'T00:00:00.000Z';
-    return this.prisma.expense.create({
+    return this.prisma.budget.create({
       data: {
-        description: description,
-        userId,
         categoryId: numcategoryId,
+        userId,
         amount: floatAmount,
         recordDate: transactionDate,
+        budgetAlert: budgetAlert, 
       },
     });
   }
-
-  async getExpense(userId: number, startDate?: Date, endDate?: Date, category?: number) {
+  async getBudget(
+    userId: number,
+    startDate?: Date,
+    endDate?: Date,
+    category?: number,
+  ) {
     const numcategoryId = parseToNumericId(category);
     const whereClause = {
       userId: userId,
@@ -59,27 +63,24 @@ export class ExpenseService {
       },
     };
 
-    return this.prisma.expense.findMany({
+    return this.prisma.budget.findMany({
       where: whereClause,
     });
   }
-
-  async getSingleExpense(id: number) {
+  async getSingleBudget(id: number) {
     const numericId = parseToNumericId(id);
-    return this.prisma.expense.findFirst({
+    return this.prisma.budget.findFirst({
       where: {
         id: numericId,
       },
     });
   }
-  
-  async updateExpenseRecord(
+  async updateBudgetRecord(
     userId: number,
     id: number,
     categoryId: string,
     amount: string,
     record_date: string,
-    description: string,
   ) {
     if (!amount || isNaN(parseFloat(amount))) {
       throw new Error('Invalid or missing amount value');
@@ -125,36 +126,35 @@ export class ExpenseService {
       );
     }
 
-    const expenseRecord = await this.prisma.expense.findFirst({
+    const BudgetRecord = await this.prisma.budget.findFirst({
       where: {
         id: numericId,
         userId: userId,
       },
     });
 
-    if (!expenseRecord) {
-      throw new HttpException('Expense record not found', HttpStatus.NOT_FOUND);
+    if (!BudgetRecord) {
+      throw new HttpException('Budget record not found', HttpStatus.NOT_FOUND);
     }
     const transactionDate = record_date + 'T00:00:00.000Z';
 
-    return this.prisma.expense.update({
+    return this.prisma.budget.update({
       where: {
         id: numericId,
       },
       data: {
-        description: description,
         amount: floatAmount,
         recordDate: transactionDate,
         categoryId: numcategoryId,
       },
     });
   }
-  async deleteExpenseRecord(userId: number, id: number) {
+  async deleteBudgetRecord(userId: number, id: number) {
     const numericId = parseToNumericId(id);
     if (!numericId) {
       throw new Error('id needed');
     }
-    return this.prisma.expense.delete({
+    return this.prisma.budget.delete({
       where: {
         id: numericId,
         userId: userId,

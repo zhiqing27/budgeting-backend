@@ -11,34 +11,28 @@ import {
   Query,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { ExpenseService } from './expense.service';
-@Controller('expense')
+import { BudgetService } from './budget.service';
+
+@Controller('budget')
 @UseGuards(JwtAuthGuard)
-export class ExpenseController {
-  constructor(private readonly expenseService: ExpenseService) {}
+export class BudgetController {
+  constructor(private readonly budgetService: BudgetService) {}
   @Post('create')
-  async createExpense(
+  async createBudget(
     @Request() req,
-    @Body()
-    data: {
-      categoryId: string;
-      amount: string;
-      record_date: string;
-      description: string;
-    },
+    @Body() data: { categoryId: string; amount: string; record_date: string,budget_alert: boolean },
   ) {
     const userId = req.user.id; // Access userId from the request object
-    return this.expenseService.createExpense(
+    return this.budgetService.createBudget(
       userId,
       data.categoryId,
       data.amount,
       data.record_date,
-      data.description,
+      data.budget_alert
     );
   }
-
   @Get('list')
-  async getExpense(
+  async getBudget(
     @Request() req,
     @Query('month') month: number,
     @Query('year') year: number,
@@ -54,15 +48,15 @@ export class ExpenseController {
       endDate = new Date(year, month, 0);
     }
 
-    return this.expenseService.getExpense(userId, startDate, endDate, category);
+    return this.budgetService.getBudget(userId, startDate, endDate, category);
   }
   @Get(':id')
-  async getSingleExpense(@Request() req, @Param('id') id: number) {
+  async getSingleBudget(@Request() req, @Param('id') id: number) {
     const userId = req.user.id;
-    return this.expenseService.getSingleExpense(id);
+    return this.budgetService.getSingleBudget(id);
   }
   @Patch(':id')
-  async updateExpenseReccord(
+  async updateBudgetRecord(
     @Request() req,
     @Param('id') id: number,
     @Body()
@@ -70,22 +64,20 @@ export class ExpenseController {
       categoryId: string;
       amount: string;
       record_date: string;
-      description: string;
     },
   ) {
     const userId = req.user.id;
-    return this.expenseService.updateExpenseRecord(
+    return this.budgetService.updateBudgetRecord(
       userId,
       id,
       data.categoryId,
       data.amount,
       data.record_date,
-      data.description,
     );
   }
-  @Delete(':id')
-  async deleteExpenseRecord(@Request() req, @Param('id') id: number) {
-    const userId = req.user.id;
-    return this.expenseService.deleteExpenseRecord(userId, id);
-  }
+    @Delete(':id')
+    async deleteBudgetRecord(@Request() req, @Param('id') id: number) {
+      const userId = req.user.id;
+      return this.budgetService.deleteBudgetRecord(userId, id);
+    }
 }

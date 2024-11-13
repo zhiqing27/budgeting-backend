@@ -40,8 +40,7 @@ export class JwtAuthGuard implements CanActivate {
     try {
       // Verify token and expiration
       const decoded = this.jwtService.verify(token);
-      console.log('decoded', decoded);
-
+    
       // Check if the token exists in the session store
       const session = await this.prisma.session.findUnique({
         where: { token },
